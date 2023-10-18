@@ -25,11 +25,11 @@ Adafruit_SSD1331 display = Adafruit_SSD1331(cs, dc, rst);
 
 char getButton(int button) {
   char buttonPressed = 'z';
-  if (button == 202) {
+  if (button >= 150 && button <= 250) {
     buttonPressed = 'a';
-  } else if (button == 408) {
+  } else if (button >= 300 && button <= 500) {
     buttonPressed = 'b';
-  } else if (button == 1021) {
+  } else if (button >= 900 && button < 1200) {
     buttonPressed = 'c';
   }
   Serial.println(buttonPressed);
@@ -65,6 +65,37 @@ void getScreenOne(int screenState){
     display.print("ONE");
   }
 }
+
+void getScreenTwo(int screenState){
+  int state = screenState;
+  while(state == 2){
+    display.fillScreen(WHITE);
+    display.setCursor(15, 15);
+    display.setTextColor(BLACK);
+    display.setTextSize(2);
+    display.print("Menu");
+    display.setCursor(15, 40);
+    display.setTextColor(BLACK);
+    display.setTextSize(2);
+    display.print("Two");
+  }
+}
+
+void getScreenThree(int screenState){
+  int state = screenState;
+  while(state == 3){
+    display.fillScreen(GREEN);
+    display.setCursor(15, 15);
+    display.setTextColor(BLACK);
+    display.setTextSize(2);
+    display.print("Menu");
+    display.setCursor(15, 40);
+    display.setTextColor(BLACK);
+    display.setTextSize(2);
+    display.print("THREE");
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
   display.begin();
@@ -76,76 +107,30 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   int buttonRead = analogRead(button);  //create an int to read the value of the button press
-  Serial.println(buttonRead);
+  Serial.println(buttonRead); //prints the value of buttonRead
+  getButton(buttonRead); //a function that takes the buttonRead int input and returns a char value
+ 
+ switch (getButton(buttonRead)){
+  case 'a':
+  while (int screenState = 1){
+  getScreenOne(screenState);
   getButton(buttonRead);
-  Serial.println();
-  while(getButton(buttonRead) == 'a'){
-    int screenState = 1;
-    getScreenOne(screenState);
   }
-  delay(600);
-  //char buttonPressed = getButton(button);
-  //Serial.println(buttonPressed);
+  break;
+  case 'b':
+  while (int screenState = 2){
+  getScreenTwo(screenState);
+  getButton(buttonRead);
+  }
+  break;
+  case 'c':
+  while (int screenState = 3){
+  getScreenThree(screenState);
+  getButton(buttonRead);
+  break;
+  }
+ }
   
-  /*Serial.println(buttonRead);  //prints the previously read button value to console
-  if (buttonRead < 300) {
-    int buttonPressed = 1;
-    return (buttonPressed);
-  } else if (buttonRead < 500) {
-    int buttonPressed = 2;
-    return (buttonPressed);
-  } else if (buttonRead < 1200) {
-    int buttonPressed = 3;
-    return (buttonPressed);
-  }*/
+  delay(600);
 
-  /*if (buttonPressed == 'a') {
-    //display.begin();
-    display.fillScreen(RED);
-    display.setCursor(15, 15);
-    display.setTextColor(WHITE);
-    display.setTextSize(2);
-    display.print("Menu");
-    display.setCursor(15, 40);
-    display.setTextColor(WHITE);
-    display.setTextSize(2);
-    display.print("ONE");
-    //delay(3000);
-  } else if (buttonPressed == 'b') {
-
-    display.fillScreen(GREEN);
-    display.setCursor(15, 15);
-    display.setTextColor(CYAN);
-    display.setTextSize(2);
-    display.print("Menu");
-    display.setCursor(15, 40);
-    display.setTextColor(CYAN);
-    display.setTextSize(2);
-    display.print("TWO");
-    //delay(3000);
-  } else if (buttonPressed == 'c') {
-
-    display.fillScreen(GREEN);
-    display.setCursor(15, 15);
-    display.setTextColor(BLACK);
-    display.setTextSize(2);
-    display.print("Menu");
-    display.setCursor(15, 40);
-    display.setTextColor(BLACK);
-    display.setTextSize(2);
-    display.print("THREE");
-    //delay(3000);
-
-  } else if (buttonPressed == '0'){
-    display.fillScreen(BLUE);
-    display.setCursor(15, 15);
-    display.setTextColor(YELLOW);
-    display.setTextSize(2);
-    display.print("Main");
-    display.setCursor(15, 40);
-    display.setTextColor(YELLOW);
-    display.setTextSize(2);
-    display.print("Menu");
-    //delay(3000);
-  }*/
 }
