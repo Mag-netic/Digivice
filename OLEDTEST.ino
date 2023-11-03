@@ -1,7 +1,7 @@
 #include <Adafruit_GFX.h>      //gfx library for the oled display
 #include <Adafruit_SSD1331.h>  //library for the ssd1331 oled display
 #include <SPI.h>               //dont know exactly what kind of library this is
-
+#include <Arduino.h>
 // This is a 96w x 64L display
 // You can use any (4 or) 5 pins
 // pins 13,11,10,9 & 8 is connected to OLED display
@@ -34,7 +34,7 @@ char getButton() {
   int lastButtonState;
   int buttonReadOld = 0;  //variable set to default button state
   if (buttonARead != buttonReadOld) {
-    delay(150);
+    delay(160);
     buttonState = 1;
     if (buttonState = 1) {
       buttonPressed = 'a';
@@ -43,8 +43,8 @@ char getButton() {
     return buttonPressed;
   }
 
-    if (buttonBRead != buttonReadOld) {
-    delay(150);
+  if (buttonBRead != buttonReadOld) {
+    delay(160);
     buttonState = 1;
     if (buttonState = 1) {
       buttonPressed = 'b';
@@ -53,8 +53,8 @@ char getButton() {
     return buttonPressed;
   }
 
-    if (buttonCRead != buttonReadOld) {
-    delay(150);
+  if (buttonCRead != buttonReadOld) {
+    delay(160);
     buttonState = 1;
     if (buttonState = 1) {
       buttonPressed = 'c';
@@ -102,27 +102,12 @@ void getCharacterScreen(int screenState) {
     display.setTextColor(YELLOW);
     display.setTextSize(1);
     display.print("Screen");
-
-    //prints the value of buttonRead
-    getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 2) {
-          getStatScreen(screenState);
-        }
-        break;
-      case 'b':
-        while (int screenState = 14) {
-          getConnectScreen(screenState);
-        }
-        break;
-    }
   }
 }
 
 void getStatScreen(int screenState) {
   int state = screenState;
-  while (state == 2) {
+  while (state == 0) {
     display.fillScreen(RED);
     display.setCursor(15, 15);
     display.setTextColor(WHITE);
@@ -133,20 +118,6 @@ void getStatScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 4) {
-          getTrainingScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 0) {
-          getCharacterScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -163,20 +134,6 @@ void getTrainingScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 6) {
-          getFoodScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 2) {
-          getStatScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -193,20 +150,6 @@ void getFoodScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 8) {
-          getBattleScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 4) {
-          getTrainingScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -223,20 +166,6 @@ void getBattleScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 10) {
-          getRestScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 6) {
-          getFoodScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -253,20 +182,6 @@ void getRestScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 12) {
-          getHealScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 8) {
-          getBattleScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -283,20 +198,6 @@ void getHealScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 14) {
-          getConnectScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 10) {
-          getRestScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
 
@@ -313,22 +214,25 @@ void getConnectScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
-    switch (getButton()) {
-      case 'a':
-        while (int screenState = 0) {
-          getCharacterScreen(screenState);
-          getButton();
-        }
-        break;
-      case 'b':
-        while (int screenState = 12) {
-          getHealScreen(screenState);
-          getButton();
-        }
-        break;
-    }
   }
 }
+
+void translateButton(char getButton(), int screenState) {
+  switch (getButton()) {
+    case 'a':
+      screenState + 2;
+      getStatScreen(screenState);
+      break;
+    case 'b':
+      getConnectScreen(screenState);
+      break;
+  }
+}
+
+int screenState = 0;
+int characterScreenLoaded = 0;
+int statScreenLoaded = 0;
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(BUTTONA, INPUT);  //set button as input
@@ -339,6 +243,20 @@ void setup() {
 }
 
 void loop() {
-  int screenState = 0;
-  getCharacterScreen(screenState);
+  while (characterScreenLoaded == 0) { // load character screen
+    getCharacterScreen(screenState);
+    characterScreenLoaded++; //Character screen is 1
+    return characterScreenLoaded; // one
+  }
+  Serial.println(characterScreenLoaded);
+  getButton();//look for button press
+  while (characterScreenLoaded == 1 && statScreenLoaded == 0 && getButton() == 'a') {
+    characterScreenLoaded--;
+    getStatScreen(screenState);
+    statScreenLoaded++;
+    return statScreenLoaded;
+    return characterScreenLoaded;
+  }
+  Serial.println(statScreenLoaded);
+  getButton();
 }
