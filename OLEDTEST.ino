@@ -34,9 +34,9 @@ char getButton() {
   int lastButtonState;
   int buttonReadOld = 0;  //variable set to default button state
   if (buttonARead != buttonReadOld) {
-    delay(160);
+    delay(180);
     buttonState = 1;
-    if (buttonState = 1) {
+    if (buttonState == 1) {
       buttonPressed = 'a';
       Serial.println(buttonPressed);
     }
@@ -44,9 +44,9 @@ char getButton() {
   }
 
   if (buttonBRead != buttonReadOld) {
-    delay(160);
+    delay(180);
     buttonState = 1;
-    if (buttonState = 1) {
+    if (buttonState == 1) {
       buttonPressed = 'b';
       Serial.println(buttonPressed);
     }
@@ -56,7 +56,7 @@ char getButton() {
   if (buttonCRead != buttonReadOld) {
     delay(160);
     buttonState = 1;
-    if (buttonState = 1) {
+    if (buttonState == 1) {
       buttonPressed = 'c';
       Serial.println(buttonPressed);
     }
@@ -64,34 +64,8 @@ char getButton() {
   }
 }
 
-/*char getButtonA() {
-  char buttonPressed;
-  int BUTTONANEW = digitalRead(BUTTONA);
-  int BUTTONBNEW = digitalRead(BUTTONA);
-  int BUTTONCNEW = digitalRead(BUTTONA);
-  int BUTTONAOLD;
-  int BUTTONBOLD;
-  int BUTTONCOLD;
-  if (BUTTONAOLD == 0 && BUTTONANEW == 1) {
-    buttonPressed = 'a';
-    BUTTONAOLD = BUTTONANEW;
-    delay(500);
-    return buttonPressed;
-  } else if (BUTTONBOLD == 0 && BUTTONBNEW == 1) {
-    buttonPressed = 'b';
-    BUTTONBOLD = BUTTONBNEW;
-    delay(500);
-    return buttonPressed;
-  } else if (BUTTONCOLD == 0 && BUTTONCNEW == 1) {
-    buttonPressed = 'c';
-    BUTTONCOLD = BUTTONCNEW;
-    delay(500);
-    return buttonPressed;
-  }
-}*/
-
 void getCharacterScreen(int screenState) {
-  int state;
+  int state = 0;
   if (state == 0) {
     display.fillScreen(BLUE);
     display.setCursor(15, 15);
@@ -101,13 +75,12 @@ void getCharacterScreen(int screenState) {
     display.setCursor(15, 40);
     display.setTextColor(YELLOW);
     display.setTextSize(1);
-    display.print("Screen");
+    //display.print("Screen");
   }
 }
 
-void getStatScreen(int screenState) {
-  int state = screenState;
-  while (state == 0) {
+void getStatScreen(int state) {
+  if (state == 2) {
     display.fillScreen(RED);
     display.setCursor(15, 15);
     display.setTextColor(WHITE);
@@ -118,12 +91,12 @@ void getStatScreen(int screenState) {
     display.setTextSize(1);
     display.print("Screen");
     getButton();
+    Serial.println(state);
   }
 }
 
-void getTrainingScreen(int screenState) {
-  int state = screenState;
-  while (state == 4) {
+void getTrainingScreen(int state) {
+  if (state == 4) {
     display.fillScreen(WHITE);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -139,7 +112,7 @@ void getTrainingScreen(int screenState) {
 
 void getFoodScreen(int screenState) {
   int state = screenState;
-  while (state == 6) {
+  if (state == 6) {
     display.fillScreen(GREEN);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -155,7 +128,7 @@ void getFoodScreen(int screenState) {
 
 void getBattleScreen(int screenState) {
   int state = screenState;
-  while (state == 8) {
+  if (state == 8) {
     display.fillScreen(GREEN);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -171,7 +144,7 @@ void getBattleScreen(int screenState) {
 
 void getRestScreen(int screenState) {
   int state = screenState;
-  while (state == 10) {
+  if (state == 10) {
     display.fillScreen(GREEN);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -187,7 +160,7 @@ void getRestScreen(int screenState) {
 
 void getHealScreen(int screenState) {
   int state = screenState;
-  while (state == 12) {
+  if (state == 12) {
     display.fillScreen(GREEN);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -201,9 +174,8 @@ void getHealScreen(int screenState) {
   }
 }
 
-void getConnectScreen(int screenState) {
-  int state = screenState;
-  while (state == 14) {
+void getConnectScreen(int state) {
+  if (state == 14) {
     display.fillScreen(GREEN);
     display.setCursor(15, 15);
     display.setTextColor(BLACK);
@@ -217,21 +189,65 @@ void getConnectScreen(int screenState) {
   }
 }
 
-void translateButton(char getButton(), int screenState) {
-  switch (getButton()) {
+ int translateButton() {
+   int state;
+  digitalRead(getButton());
+  switch (getButton()){
     case 'a':
-      screenState + 2;
-      getStatScreen(screenState);
-      break;
+    state = 2;
+    //Serial.println(state);
+    return state;
+    break;
     case 'b':
-      getConnectScreen(screenState);
-      break;
+    state = 14;
+    //Serial.println(state);
+    return state;
+    break;
   }
 }
+
+void getState(int screenState){
+  int state = screenState;
+  int statScreenLoaded = 0;
+  int connectScreenLoaded = 0;
+  int trainingScreenLoaded = 0;
+  if (state == 0 && getButton() == 'a' && statScreenLoaded == 0){//character screen button press a goes to stat screen
+    state+=2;
+    getStatScreen(state);
+    Serial.println(state);
+    statScreenLoaded++;
+    return statScreenLoaded;
+    return state;
+  }
+  if (state == 0 && getButton() == 'b' && connectScreenLoaded == 0 && statScreenLoaded == 0){//character screen button b goes to connect screen
+    state = 14;
+    Serial.println(state);
+    getConnectScreen(state);
+    connectScreenLoaded++;
+    return connectScreenLoaded;
+    return state;
+  }
+  if (state == 2 && getButton() == 'a' && statScreenLoaded == 1 && trainingScreenLoaded == 0){//stat screen button a goes to training
+    state+=2;
+    getTrainingScreen(state);
+    Serial.println(state);
+    trainingScreenLoaded++;
+    return trainingScreenLoaded;
+    return state;
+  }
+  if (state == 2 && getButton() == 'b' && statScreenLoaded == 1){
+    state =- 2;
+    getCharacterScreen(screenState);
+  }
+
+}
+
+
 
 int screenState = 0;
 int characterScreenLoaded = 0;
 int statScreenLoaded = 0;
+char buttonPressed;
 
 void setup() {
   // put your setup code here, to run once:
@@ -248,15 +264,6 @@ void loop() {
     characterScreenLoaded++; //Character screen is 1
     return characterScreenLoaded; // one
   }
-  Serial.println(characterScreenLoaded);
-  getButton();//look for button press
-  while (characterScreenLoaded == 1 && statScreenLoaded == 0 && getButton() == 'a') {
-    characterScreenLoaded--;
-    getStatScreen(screenState);
-    statScreenLoaded++;
-    return statScreenLoaded;
-    return characterScreenLoaded;
-  }
-  Serial.println(statScreenLoaded);
-  getButton();
+  getState(screenState);
+  
 }
